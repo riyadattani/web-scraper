@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	addresses, err := scraper.Scrape("https://www.retinalscreening.co.uk/patient-information/screening-locations-list/#loclist-South")
+	addressScraper := scraper.New()
+	addresses, err := addressScraper.Scrape("https://www.retinalscreening.co.uk/patient-information/screening-locations-list/#loclist-South")
 	if err != nil {
 		log.Fatalf("unable to scrape site err: %v", err)
 	}

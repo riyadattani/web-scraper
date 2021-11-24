@@ -21,7 +21,8 @@ func TestScrape(t *testing.T) {
 			is.NoErr(err)
 		}))
 
-		addresses, err := scraper.Scrape(server.URL)
+		addressScraper := scraper.New()
+		addresses, err := addressScraper.Scrape(server.URL)
 		is.NoErr(err)
 
 		is.Equal(len(addresses), 3)

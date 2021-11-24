@@ -8,10 +8,18 @@ import (
 
 type Addresses []string
 
-func Scrape(url string) (Addresses, error) {
+type AddressScraper struct {
+	Addresses Addresses
+}
+
+func New() *AddressScraper {
+	return &AddressScraper{Addresses: nil}
+}
+
+func (s AddressScraper) Scrape(url string) (Addresses, error) {
 	res, err := http.Get(url)
 	if err != nil {
-		panic("oh no")
+		return nil, err
 	}
 
 	defer res.Body.Close()
@@ -21,14 +29,12 @@ func Scrape(url string) (Addresses, error) {
 		return nil, err
 	}
 
-	var addresses Addresses
-
 	document.Find("div.loclist-address").Each(func(i int, selection *goquery.Selection) {
 		html, _ := selection.Html()
 		addWithoutBr := strings.Replace(html, "<br/>", " ", -1)
-		addresses = append(addresses, addWithoutBr)
+		s.Addresses = append(s.Addresses, addWithoutBr)
 	})
 
-	return addresses, err
+	return s.Addresses, err
 
 }
