@@ -22,8 +22,8 @@ func (s *AddressScraper) Scrape(url string) (Addresses, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer res.Body.Close()
+
 	err = s.parseRetinalScreeningURL(res.Body)
 	if err != nil {
 		return nil, err
