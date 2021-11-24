@@ -2,6 +2,7 @@ package scraper
 
 import (
 	"github.com/PuerkitoBio/goquery"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -13,20 +14,28 @@ type AddressScraper struct {
 }
 
 func New() *AddressScraper {
-	return &AddressScraper{Addresses: nil}
+	return &AddressScraper{Addresses: []string{}}
 }
 
-func (s AddressScraper) Scrape(url string) (Addresses, error) {
+func (s *AddressScraper) Scrape(url string) (Addresses, error) {
 	res, err := http.Get(url)
 	if err != nil {
 		return nil, err
 	}
 
 	defer res.Body.Close()
-
-	document, err := goquery.NewDocumentFromReader(res.Body)
+	err = s.parseRetinalScreeningURL(res.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	return s.Addresses, err
+}
+
+func (s *AddressScraper) parseRetinalScreeningURL(body io.Reader) error {
+	document, err := goquery.NewDocumentFromReader(body)
+	if err != nil {
+		return err
 	}
 
 	document.Find("div.loclist-address").Each(func(i int, selection *goquery.Selection) {
@@ -35,6 +44,5 @@ func (s AddressScraper) Scrape(url string) (Addresses, error) {
 		s.Addresses = append(s.Addresses, addWithoutBr)
 	})
 
-	return s.Addresses, err
-
+	return nil
 }
