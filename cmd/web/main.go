@@ -14,7 +14,9 @@ func main() {
 	}
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "addresses: %v", addresses)
+		for _, address := range addresses {
+			fmt.Fprintf(w, "%v\n", address)
+		}
 	})
 	log.Fatal(http.ListenAndServe(":5000", handler))
 }
